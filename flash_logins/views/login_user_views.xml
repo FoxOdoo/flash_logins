@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="login_user_detail_form_view">
+            <field name="name">Login User Details</field>
+            <field name="model">login.detail</field>
+            <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="user" />
+                        <field name="platform" />
+                        <field name="browser" />
+                        <field name="browser_version" />
+                        <field name="ip_address" />
+                        <field name="date_time" />
+                        <field name="logout_datetime" />
+                        <field name="session_time" />
+                        <field name="state" />
+                    </group>
+                </sheet>
+            </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="login_user_detail_tree_view">
+            <field name="name">Login User Details</field>
+            <field name="model">login.detail</field>
+            <field name="arch" type="xml">
+                <tree decoration-success="state=='in'" decoration-danger="state=='failed'" decoration-muted="state=='out'">
+                    <field name="user" />
+                    <field name="platform" />
+                    <field name="browser" />
+                    <field name="browser_version" />
+                    <field name="ip_address" />
+                    <field name="date_time" />
+                    <field name="logout_datetime" />
+                    <field name="session_time" class="text-center" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="login_user_detail_tree_view_search" model="ir.ui.view">
+            <field name="name">login.user.detail.tree.view.search</field>
+            <field name="model">login.detail</field>
+            <field name="arch" type="xml">
+                <search string="Search Login">
+                    <filter string="Conected" domain="[('state', '=', 'in')]" name="conected" />
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="login_user_detail_action_window">
+            <field name="name">Login User Details</field>
+            <field name="res_model">login.detail</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="login_user_detail_tree_view_search"></field>
+            <field name="context">{'search_default_conected': 1}</field>
+        </record>
+
+    <menuitem name="Login Details" id="flash_logins.menu_1_list" parent="base.menu_users"
+              action="login_user_detail_action_window"/>
+
+  </data>
+</odoo>
