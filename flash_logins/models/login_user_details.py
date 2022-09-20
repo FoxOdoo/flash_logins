@@ -27,6 +27,7 @@ from odoo.http import request
 from odoo import models, fields, api, SUPERUSER_ID
 from odoo.exceptions import AccessDenied
 import httpagentparser
+import pytz
 
 _logger = logging.getLogger(__name__)
 USER_PRIVATE_FIELDS = ['password']
@@ -37,7 +38,7 @@ class LoginUserDetail(models.Model):
     _inherit = 'res.users'
 
     @classmethod
-    def _login(cls, db, login, password):
+    def _login(cls, db, login, password, user_agent_env):
         ip_address = request.httprequest.environ['REMOTE_ADDR']
         agent = request.httprequest.environ.get('HTTP_USER_AGENT')
         browser = httpagentparser.detect(agent)
@@ -64,7 +65,11 @@ class LoginUserDetail(models.Model):
                     if not user:
                         raise AccessDenied()
                     user = user.with_user(user)
-                    user._check_credentials(password)
+                    user._check_credentials(password, user_agent_env)
+                    tz = request.httprequest.cookies.get('tz') if request else None
+                    if tz in pytz.all_timezones and (not user.tz or not user.login_date):
+                        # first login or missing tz -> set tz to browser tz
+                        user.tz = tz
                     user._update_last_login()
         except AccessDenied:
             _logger.info("Login failed for db:%s login:%s from %s", db, login, ip)
@@ -80,6 +85,7 @@ class LoginUserDetail(models.Model):
 
 class LoginUpdate(models.Model):
     _name = 'login.detail'
+    _description = 'Login Detail'
 
     user = fields.Many2one('res.users', string="User")
     platform = fields.Char("Platform")

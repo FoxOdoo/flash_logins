@@ -36,10 +36,10 @@ class InheritSession(main.Session):
         request.session.logout(keep_db=True)
         return werkzeug.utils.redirect(redirect, 303)
 
-class InheritHome(Home):
-    @http.route()
-    def web_login(self, redirect=None, **kw):
-        if 'login' in kw:
-            print(kw)
+# class InheritHome(Home):
+#     @http.route()
+#     def web_login(self, redirect=None, **kw):
+#         if 'login' in kw:
+#             print(kw)
         
-        return super(InheritHome, self).web_login()
+#         return super(InheritHome, self).web_login(redirect=redirect, kw=kw)
